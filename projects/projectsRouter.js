@@ -22,6 +22,17 @@ router.get('/:id', validateProjectID, (req, res) => {
     res.status(200).json(req.project)
 })
 
+router.get('/:id/actions', validateProjectID, (req, res) => {
+    const { id } = req.params
+    Projects.getProjectActions(id)
+        .then(action => {
+            res.status(200).json(action)
+        })
+        .catch(err => {
+            res.status(500).json({ message: "The actions could not be retrieved" })
+        })
+})
+
 router.post('/', (req, res) => {
     const project = req.body
     Projects.insert(project)
@@ -45,6 +56,22 @@ router.delete('/:id', (req, res) => {
         })
         .catch(err => {
             res.status(500).json({ message: "There was an error removing the Project" })
+        })
+})
+
+router.put('/:id', (req, res) => {
+    const { id } = req.params
+    const updates = req.body
+    Projects.update(id, updates)
+        .then(project => {
+            if(project) {
+                res.status(200).json(project)
+            } else {
+                res.status(404).json({ message: "The Project could not be found" })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Error saving Project updates" })
         })
 })
 
